@@ -1,7 +1,6 @@
 # Android Unpinner
 
 This tool removes certificate pinning from APKs.
-
  - Does not require root.
  - Uses [`frida-apk`](https://github.com/frida/frida-tools/blob/main/frida_tools/apk.py) to mark app as debuggable.
    This is much less invasive than other approaches, only `AndroidManifest.xml` is touched within the APK.
