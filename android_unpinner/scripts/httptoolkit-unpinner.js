@@ -27,7 +27,6 @@
  *************************************************************************************************/
 
 const DEBUG_MODE = false;
-
 function buildX509CertificateFromBytes(certBytes) {
     const ByteArrayInputStream = Java.use('java.io.ByteArrayInputStream');
     const CertFactory = Java.use('java.security.cert.CertificateFactory');
@@ -58,20 +57,25 @@ function getCustomTrustManagerFactory() {
 
     return customTrustManagerFactory;
 }
-
 function getCustomX509TrustManager() {
-    const customTrustManagerFactory = getCustomTrustManagerFactory();
-    const trustManagers = customTrustManagerFactory.getTrustManagers();
-
     const X509TrustManager = Java.use('javax.net.ssl.X509TrustManager');
 
-    const x509TrustManager = trustManagers.find((trustManager) => {
-        return trustManager.class.isAssignableFrom(X509TrustManager.class);
+    const TrustAllManager = Java.registerClass({
+        name: 'org.httptoolkit.TrustAllManager',
+        implements: [X509TrustManager],
+        methods: {
+            checkClientTrusted: function (chain, authType) {},
+            checkServerTrusted: function (chain, authType) {},
+            getAcceptedIssuers: function () {
+                return [];
+            }
+        }
     });
 
-    // We have to cast it explicitly before Frida will allow us to use the X509 methods:
-    return Java.cast(x509TrustManager, X509TrustManager);
+    return TrustAllManager.$new();
 }
+
+
 
 // Some standard hook replacements for various cases:
 const NO_OP = () => {};

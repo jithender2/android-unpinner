@@ -2,6 +2,7 @@ import subprocess
 import sys
 from functools import cache
 from pathlib import Path
+import platform
 
 here = Path(__file__).absolute().parent
 
@@ -14,9 +15,14 @@ elif sys.platform == "darwin":
     apksigner_binary = here / "darwin" / "apksigner"
     zipalign_binary = here / "darwin" / "zipalign"
 else:
-    aapt2_binary = here / "linux" / "aapt2"
-    apksigner_binary = here / "linux" / "apksigner"
-    zipalign_binary = here / "linux" / "zipalign"
+    if platform.machine()=="aarch64":
+        aapt2_binary = here / "linux-aarch64" / "aapt2"
+        apksigner_binary = here / "linux-aarch64" / "apksigner"
+        zipalign_binary = here / "linux-aarch64" / "zipalign"
+    else:
+       aapt2_binary = here / "linux" / "aapt2"
+       apksigner_binary = here / "linux" / "apksigner"
+       zipalign_binary = here / "linux" / "zipalign"
 
 
 def zipalign(apk_file: Path) -> None:

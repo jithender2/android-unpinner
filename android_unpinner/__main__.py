@@ -24,7 +24,38 @@ LIBGADGET_CONF = "libgadget.config.so"
 force = False
 gadget_config_file = gadget_config_file_script_directory
 
+#from pathlib import Path
+#import logging
+#import frida_tools.apk
+#import build_tools  # Assuming your script has this
 
+'''def patch_apk_file(apks_file: Path, out_apks_file: Path):
+    import zipfile
+    import shutil
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp = Path(tmpdir)
+
+        # Step 1: Extract .apks
+        with zipfile.ZipFile(apks_file, 'r') as zip_ref:
+            zip_ref.extractall(tmp)
+
+        # Step 2: Patch base.apk
+        base_apk = tmp / "splits" / "base-master.apk"
+        patched_base_apk = tmp / "splits" / "patched-base.apk"
+        frida_tools.apk.make_debuggable(str(base_apk), str(patched_base_apk))
+
+        # Optional: Replace original base
+        base_apk.unlink()
+        patched_base_apk.rename(base_apk)
+
+        # Step 3: Zip everything back into a new .apks file
+        shutil.make_archive(str(out_apks_file.with_suffix("")), 'zip', tmp)
+        out_apks_file.with_suffix(".zip").rename(out_apks_file)
+
+    logging.info(f"Created patched .apks: {out_apks_file}")
+'''
 def patch_apk_file(infile: Path, outfile: Path) -> None:
     """
     Patch the APK to be debuggable.
@@ -46,7 +77,6 @@ def patch_apk_file(infile: Path, outfile: Path) -> None:
     build_tools.sign(outfile)
 
     logging.info(f"Created patched APK: {outfile}")
-
 
 def patch_apk_files(apks: list[Path]) -> list[Path]:
     """
@@ -131,7 +161,10 @@ def start_app_on_device(package_name: str) -> None:
     ensure_device_connected()
     logging.info("Start app (suspended)...")
     adb(f"shell am set-debug-app -w {package_name}")
-    activity = adb(f"shell cmd \"package resolve-activity --brief {package_name} | tail -n 1\"").stdout.strip()
+#    activity = adb(f'shell cmd \"package resolve-activity --brief {package_name} | tail -n 1\"').stdout.strip()
+    # Pass the full shell command as one string
+#    # Correct, no quotes
+    activity = adb(f"shell cmd package resolve-activity --brief {package_name}| tail -n 1").stdout.strip()
     adb(f"shell am start -n {activity}")
 
     logging.info("Obtain process id...")
