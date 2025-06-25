@@ -57,25 +57,6 @@ function getCustomTrustManagerFactory() {
 
     return customTrustManagerFactory;
 }
-function getCustomX509TrustManager() {
-    const X509TrustManager = Java.use('javax.net.ssl.X509TrustManager');
-
-    const TrustAllManager = Java.registerClass({
-        name: 'org.httptoolkit.TrustAllManager',
-        implements: [X509TrustManager],
-        methods: {
-            checkClientTrusted: function (chain, authType) {},
-            checkServerTrusted: function (chain, authType) {},
-            getAcceptedIssuers: function () {
-                return [];
-            }
-        }
-    });
-
-    return TrustAllManager.$new();
-}
-
-
 
 // Some standard hook replacements for various cases:
 const NO_OP = () => {};
